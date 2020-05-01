@@ -8,13 +8,13 @@ import textwrap
 import typing
 import webbrowser
 
-from . import cli
-from . import utility
+from . import _cli
+from . import _utility
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Download tests from URL.", parents=[cli.common_options]
+        description="Download tests from URL.", parents=[_cli.common_options]
     )
     parser.add_argument(
         "-o",
@@ -34,8 +34,7 @@ def main():
         # stderr_handler.setLevel(args.log_level)
         # root_logger.addHandler(stderr_handler)
 
-        kwargs = vars(args)
-        problem = utility.identify_problem(args.url)
+        problem = _utility.identify_problem(args.url)
         problem.download_tests().extractall(args.destination)
     except FileNotFoundError as err:
         raise

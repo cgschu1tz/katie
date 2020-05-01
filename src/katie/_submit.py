@@ -8,18 +8,18 @@ import textwrap
 import typing
 import webbrowser
 
-from . import cli
-from . import utility
+from . import _cli
+from . import _utility
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Submit FILES to URL.", parents=[cli.common_options]
+        description="Submit FILES to URL.", parents=[_cli.common_options]
     )
     parser.add_argument(
         "-c",
         "--certificate",
-        default=utility.nearest(".kattisrc"),
+        default=_utility.nearest(".kattisrc"),
         help="a file that some some judges (Kattis) require to login (defaults to nearest `.kattisrc`)",
     )
     parser.add_argument(
@@ -41,7 +41,7 @@ def main():
 
         kwargs = vars(args)
         positive_replies = ["y", "yes"]
-        problem = utility.identify_problem(args.url)
+        problem = _utility.identify_problem(args.url)
         if args.force or input("Submit? [yN] ").lower() in positive_replies:
             verdict = problem.submit(**kwargs)
             print(verdict)

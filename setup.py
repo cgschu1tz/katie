@@ -8,8 +8,8 @@ setup(
     extras_require={"dev": ["black", "pytest"]},
     entry_points={
         "console_scripts": [
-            "katie-download = katie.download:main",
-            "katie-submit = katie.submit:main",
+            "katie-download = katie._download:main",
+            "katie-submit = katie._submit:main",
         ]
     },
     python_requires=">=3.6",
