@@ -7,10 +7,7 @@ setup(
     install_requires=["beautifulsoup4", "requests"],
     extras_require={"dev": ["black", "pytest"]},
     entry_points={
-        "console_scripts": [
-            "katie-download = katie._download:main",
-            "katie-submit = katie._submit:main",
-        ]
+        "console_scripts": ["kt = katie._cli:main", "katie = katie._cli:main"]
     },
     python_requires=">=3.6",
     classifiers=[
