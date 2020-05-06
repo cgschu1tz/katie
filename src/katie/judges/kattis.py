@@ -49,15 +49,13 @@ class Problem:
         else:
             raise error.NotMyProblemError
 
-    def download_tests(self) -> zipfile.ZipFile:
+    def tests(self) -> zipfile.ZipFile:
         response = requests.get(
             self._url + "/file/statement/samples.zip",
             headers=self._HEADERS,
             timeout=self._HTTP_TIMEOUT,
         )
         response.raise_for_status()
-        _DEBUG(response.status_code)
-
         return zipfile.ZipFile(io.BytesIO(response.content))
 
     def _login(self, secrets):
