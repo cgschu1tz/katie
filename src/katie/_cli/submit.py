@@ -19,8 +19,8 @@ def main():
     parser.add_argument(
         "-c",
         "--certificate",
-        default=utility.nearest(".kattisrc"),
-        help="a file that some some judges (Kattis) require to login (defaults to nearest `.kattisrc`)",
+        default=pathlib.Path.home() / pathlib.Path(".kattisrc"),
+        help="a file that some some judges (Kattis) require to login (defaults to `~/.kattisrc`)",
     )
     parser.add_argument(
         "-f", "--force", action="store_true", help="Don't prompt before submission.",
