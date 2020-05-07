@@ -27,7 +27,7 @@ def main():
     parser.add_argument("url")
 
     args = parser.parse_args()
-    utility.init_root_logger(**vars(args))
+    utility.init_root_logger(args.logging_level)
 
     problem = utility.identify_problem(args.url)
     problem.download_tests().extractall(args.dest)

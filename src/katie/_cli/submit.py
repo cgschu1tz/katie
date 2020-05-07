@@ -32,7 +32,7 @@ def main():
 
     args = parser.parse_args()
     kwargs = vars(args)
-    utility.init_root_logger(**kwargs)
+    utility.init_root_logger(args.logging_level)
     positive_replies = ["y", "yes"]
     problem = utility.identify_problem(args.url)
     if args.force or input("Submit? [yN] ").lower() in positive_replies:

@@ -24,7 +24,7 @@ common_options.add_argument(
 )
 
 
-def init_root_logger(logging_level: int, **kwargs):
+def init_root_logger(logging_level: int):
     logging.basicConfig(level=logging_level)
 
 
