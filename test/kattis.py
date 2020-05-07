@@ -1,6 +1,5 @@
 import pytest
 
-from katie import error
 from katie.judges import kattis
 
 @pytest.mark.parametrize("url", [
@@ -20,5 +19,5 @@ def test_recognized_urls(url: str):
     "https://open.kattis.com/contests",
 ])
 def test_unrecognized_urls(url: str):
-    with pytest.raises(error.NotMyProblemError):
+    with pytest.raises(ValueError):
         kattis.Problem(url)

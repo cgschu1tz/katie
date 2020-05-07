@@ -9,7 +9,7 @@ import textwrap
 import typing
 import webbrowser
 
-from .. import error
+from .. import errors
 from .. import judges
 
 common_options = argparse.ArgumentParser(add_help=False)
@@ -35,6 +35,6 @@ def identify_problem(url: str):
         try:
             module = importlib.import_module(module_info.name)
             return module.Problem(url)
-        except error.NotMyProblemError:
+        except ValueError:
             pass
     raise ValueError

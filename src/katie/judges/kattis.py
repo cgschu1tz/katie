@@ -9,7 +9,7 @@ import requests.exceptions
 import typing
 import zipfile
 
-from .. import error
+from .. import errors
 
 _DEBUG = logging.getLogger(__name__).debug
 
@@ -47,7 +47,7 @@ class Problem:
             self._url = url
             self._id = m.group(1)
         else:
-            raise error.NotMyProblemError
+            raise ValueError
 
     def tests(self) -> zipfile.ZipFile:
         response = requests.get(
@@ -73,7 +73,7 @@ class Problem:
             # token.
             data["token"] = secrets["user"]["token"]
         else:
-            raise error.LoginError("Missing password or token")
+            raise errors.LoginError("Missing password or token")
 
         _DEBUG(
             "Logging in to `%s` as `%s`", secrets["kattis"]["loginurl"], data["user"]
@@ -138,4 +138,4 @@ class Problem:
         else:
             # If the response does not contain a submission ID,
             # it is almost certainly not good news.
-            raise error.SubmissionError(f"Kattis says '{content}'")
+            raise errors.SubmissionError(f"Kattis says '{content}'")
