@@ -8,6 +8,7 @@ import textwrap
 import typing
 import webbrowser
 
+from .. import identify_problem
 from . import utility
 
 
@@ -29,5 +30,5 @@ def main():
     args = parser.parse_args()
     utility.init_root_logger(args.logging_level)
 
-    problem = utility.identify_problem(args.url)
-    problem.download_tests().extractall(args.dest)
+    problem = identify_problem(args.url)
+    problem.tests().extractall(args.dest)
