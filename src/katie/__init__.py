@@ -8,8 +8,17 @@ _DEBUG = logging.getLogger(__name__).debug
 
 
 def identify_problem(url: str):
-    # Save us from repeating the URL in every log message.
-    _DEBUG("Identifying URL `%s`", url)
+    """Identify a problem from its URL.
+
+    >>> identify_problem("https://open.kattis.com/problems/2048")
+    <katie.judges.kattis.Problem object at 0x...>
+
+    If no judge recognizes ``url``, raise ``ValueError``.
+    >>> identify_problem("https://not.a.problem")
+    Traceback (most recent call last):
+    ...
+    ValueError: ...
+    """
     for module_info in pkgutil.iter_modules(
         judges.__path__, prefix=judges.__name__ + "."
     ):
@@ -17,7 +26,12 @@ def identify_problem(url: str):
             module = importlib.import_module(module_info.name)
             return module.Problem(url)
         except (AttributeError, ValueError):
-            _DEBUG("`%s` did not recognize the URL.", module_info.name, exc_info=True)
+            _DEBUG(
+                "`%s` did not recognize the URL `%s`.",
+                module_info.name,
+                url,
+                exc_info=True,
+            )
     raise ValueError(f"No judge recognized the URL `{url}`.")
 
 
