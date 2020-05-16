@@ -34,4 +34,3 @@ def main():
     problem = identify_problem(args.url)
     verdict = problem.submit(**kwargs)
     print(verdict)
-    webbrowser.open(verdict)
