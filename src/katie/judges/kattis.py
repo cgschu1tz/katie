@@ -85,7 +85,6 @@ class Problem:
             timeout=self._HTTP_TIMEOUT,
         )
         response.raise_for_status()
-        _DEBUG(response.status_code)
         return response.cookies
 
     def submit(
