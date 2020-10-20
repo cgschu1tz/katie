@@ -1,20 +1,23 @@
+from bs4 import BeautifulSoup
 import collections
+import zipfile
 import configparser
+import re
 import io
 import logging
 import pathlib
-import re
+from urllib.parse import urljoin
 import requests
 import requests.exceptions
 import typing
-import zipfile
 
 from .. import errors
 
 _DEBUG = logging.getLogger(__name__).debug
+_WARNING = logging.getLogger(__name__).warning
+
 
 class Problem:
-    # Use same headers as official CLI.
     _HEADERS = {"User-Agent": "kattis-cli-submit"}
     _LANGUAGES = [
         "C",
@@ -50,8 +53,26 @@ class Problem:
             raise ValueError
 
     def tests(self) -> zipfile.ZipFile:
-        response = requests.get(
-            self._url + "/file/statement/samples.zip",
+        # Since we're making more than one HTTP(S) request, start a session.
+        # According to https://requests.readthedocs.io/en/v0.8.2/user/advanced/#keep-alive,
+        # this automatically sets Keep-Alive, which saves us the overhead of starting each
+        # connection from scratch.
+        session = requests.session()
+        
+        response = session.get(
+            self._url, headers=self._HEADERS, timeout=self._HTTP_TIMEOUT
+        )
+        response.raise_for_status()
+        soup = BeautifulSoup(response.content, "html.parser")
+        test_links = soup.find_all("a", string="Sample data files", limit=2)
+        if not test_links:
+            raise ValueError("No download URL")
+        elif len(test_links) > 1:
+            _WARNING("Found more than one download link, so I'm picking the first one I see.")
+
+        _DEBUG("Downloading tests from `{")
+        response = session.get(
+            urljoin(self._url, test_links[0]["href"]),
             headers=self._HEADERS,
             timeout=self._HTTP_TIMEOUT,
         )
