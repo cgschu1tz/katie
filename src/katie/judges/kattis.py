@@ -79,35 +79,6 @@ class Problem:
         response.raise_for_status()
         return zipfile.ZipFile(io.BytesIO(response.content))
 
-    def _login(self, secrets):
-        """Login to Kattis.
-
-        :return: freshly baked cookies
-        """
-        data = {"user": secrets["user"]["username"], "script": "true"}
-
-        # Certificate must either provide...
-        if "password" in secrets["user"]:
-            # a password or...
-            data["password"] = secrets["user"]["password"]
-        elif "token" in secrets["user"]:
-            # token.
-            data["token"] = secrets["user"]["token"]
-        else:
-            raise errors.LoginError("Missing password or token")
-
-        _DEBUG(
-            "Logging in to `%s` as `%s`", secrets["kattis"]["loginurl"], data["user"]
-        )
-        response = requests.post(
-            secrets["kattis"]["loginurl"],
-            data=data,
-            headers=self._HEADERS,
-            timeout=self._HTTP_TIMEOUT,
-        )
-        response.raise_for_status()
-        return response.cookies
-
     def submit(
         self,
         certificate: str,
@@ -125,7 +96,33 @@ class Problem:
         secrets = configparser.ConfigParser()
         with open(certificate) as f:
             secrets.read_file(f)
-        cookies = self._login(secrets)
+
+        data = {"user": secrets["user"]["username"], "script": "true"}
+
+        # This session will save the freshly baked cookies from a
+        # successful login so we can submit using the same connection.
+        session = requests.session()
+
+        # Certificate must either provide...
+        if "password" in secrets["user"]:
+            # a password or...
+            data["password"] = secrets["user"]["password"]
+        elif "token" in secrets["user"]:
+            # token.
+            data["token"] = secrets["user"]["token"]
+        else:
+            raise errors.LoginError("Missing password or token")
+
+        _DEBUG(
+            "Logging in to `%s` as `%s`", secrets["kattis"]["loginurl"], data["user"]
+        )
+        response = session.post(
+            secrets["kattis"]["loginurl"],
+            data=data,
+            headers=self._HEADERS,
+            timeout=self._HTTP_TIMEOUT,
+        )
+        response.raise_for_status()
 
         data = {
             "submit": "true",
@@ -141,12 +138,11 @@ class Problem:
             for file in files
         ]
 
-        response = requests.post(
+        response = session.post(
             # secrets["kattis"]["submissionurl"],
             self._url + "/submit",
             data=data,
             files=files,
-            cookies=cookies,
             headers=self._HEADERS,
             timeout=self._HTTP_TIMEOUT,
         )
